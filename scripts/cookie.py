@@ -12,11 +12,11 @@ def get_cookie(driver):
 
 
 def main(param):
-    print("open: " + params[0], file=sys.stderr)
+    print("open: " + param[0], file=sys.stderr)
     driver = uc.Chrome(use_subprocess=True, version_main=108)
     try:
         with driver:
-            driver.get(params[0])
+            driver.get(param[0])
             cf_cookie = get_cookie(driver)
             c = 0
             while not cf_cookie:
