@@ -36,8 +36,8 @@ pub async fn cookie_handler(
     *count += 1;
     log::debug!("invocations: {count}");
     log::debug!("user-agent : {}", srv.user_agent);
-    let url = params.url.unwrap_or_else(|| "".to_string());
-    if url == "" {
+    let url = params.url.unwrap_or_default();
+    if url.is_empty() {
         return Err(ParamError {
             msg: "No target url".to_string(),
         }
@@ -72,7 +72,7 @@ pub async fn cookie_handler(
             Ok(warp::reply::json(&res).into_response())
         }
         Err(err) => Err(ParamError {
-            msg: err.to_string(),
+            msg: err,
         }
         .into()),
     }
