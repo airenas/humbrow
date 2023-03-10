@@ -80,7 +80,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .recover(errors::handle_rejection);
 
     let (_, server) =
-        warp::serve(routes).bind_with_graceful_shutdown(([127, 0, 0, 1], cfg.port), async move {
+        warp::serve(routes).bind_with_graceful_shutdown(([0, 0, 0, 0], cfg.port), async move {
             cancel_token.cancelled().await;
         });
 
