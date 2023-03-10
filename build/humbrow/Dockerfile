@@ -30,5 +30,6 @@ RUN mkdir -p /app
 COPY --from=builder /src/target/release/humbrow /app/
 
 COPY scripts/agent.py /app/scripts/
+COPY scripts/cookie.py /app/scripts/
 
 CMD ["./humbrow"]
