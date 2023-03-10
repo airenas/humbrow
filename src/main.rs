@@ -86,7 +86,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     tokio::spawn(async move {
         log::info!("call to agent script");
-        let url = format!("localhost:{}/agent", cfg.port);
+        let url = format!("http://localhost:{}/agent", cfg.port);
         log::debug!("invoke : {} {} {}", cfg.python, cfg.agent_script, url);
         let output = std::process::Command::new(cfg.python.as_str()) // todo: add timeout for command
             .arg(cfg.agent_script.as_str())
@@ -110,7 +110,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         };
     });
 
-    log::info!("wait for server finish");
+    log::info!("wait for server to finish");
     tokio::task::spawn(server).await.unwrap_or_else(|err| {
         log::error!("{err}");
         process::exit(1);

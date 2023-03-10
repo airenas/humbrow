@@ -20,7 +20,7 @@ impl Config {
         Ok(Config {
             port,
             version: "dev".to_string(),
-            python: option_env!("PYTHON").unwrap_or("python").into(),
+            python: option_env!("PYTHON").unwrap_or("ipython").into(),
             cookie_script: option_env!("COOKIE_SCRIPT")
                 .unwrap_or("scripts/cookie.py")
                 .into(),

@@ -25,15 +25,10 @@ LABEL org.opencontainers.image.version=$BUILD_VERSION \
       description="This image is used to host the humbrow container" 
 
 WORKDIR /app
-ENV UID=999
-
-RUN addgroup --gid $UID app && useradd -r -M -u $UID -g app app   
-RUN mkdir -p /app && chown -R app:app /app   
+RUN mkdir -p /app
 
 COPY --from=builder /src/target/release/humbrow /app/
 
-RUN chown app:app /app/* /app
+COPY scripts/agent.py /app/scripts/
 
-USER app
-
-ENTRYPOINT ["./humbrow"]
+CMD ["./humbrow"]
