@@ -30,6 +30,7 @@ def main(param):
             print("got", cf_cookie, file=sys.stderr)
             print(cf_cookie)
     finally:
+        driver.close()    
         driver.quit()
     print("done", file=sys.stderr)
     return 0

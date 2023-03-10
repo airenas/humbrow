@@ -2,6 +2,7 @@ mod config;
 mod data;
 mod errors;
 mod handlers;
+mod reaper;
 
 use clap::Arg;
 use data::Service;
@@ -16,6 +17,7 @@ use config::Config;
 use tokio::signal::unix::{signal, SignalKind};
 
 use crate::handlers::CookieParams;
+use crate::reaper::do_zombie_reaper;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -79,10 +81,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .with(warp::cors().allow_any_origin())
         .recover(errors::handle_rejection);
 
+    let ct = cancel_token.clone();
     let (_, server) =
         warp::serve(routes).bind_with_graceful_shutdown(([0, 0, 0, 0], cfg.port), async move {
-            cancel_token.cancelled().await;
+            ct.cancelled().await;
         });
+
+    tokio::spawn(async move {
+        do_zombie_reaper(cancel_token).await.unwrap_or_else(|e| {
+            log::error!("{e}");
+        });
+        log::debug!("exit zombie reaper");
+    });
 
     tokio::spawn(async move {
         log::info!("call to agent script");

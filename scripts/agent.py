@@ -14,6 +14,7 @@ def main(params):
             source_code = elem.get_attribute("outerHTML")
             print(source_code, file=sys.stderr)
     finally:
+        driver.close()    
         driver.quit()    
     print("done", file=sys.stderr)
 
