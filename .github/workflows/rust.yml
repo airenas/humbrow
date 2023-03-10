@@ -1,0 +1,31 @@
+name: Rust
+
+on:
+  push:
+    branches: [ main]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Run tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./emarket
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+            components: clippy
+      - name: Build 
+        run: make build/local     
+
+      - name: Test 
+        run: make test/unit     
+
+      - name: Lint 
+        run: make test/lint     
