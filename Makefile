@@ -1,11 +1,12 @@
 -include Makefile.options
+port?=8000
 ###############################################################################
 run:
-	RUST_LOG=DEBUG cargo run --bin humbrow -- -p=8001
+	RUST_LOG=DEBUG cargo run --bin humbrow -- -p=$(port)
 .PHONY: run
 ###############################################################################
 run/build: build/local
-	RUST_LOG=DEBUG target/release/humbrow
+	RUST_LOG=DEBUG target/release/humbrow -p=$(port)
 .PHONY: run/build
 ###############################################################################
 build/local: 
