@@ -47,6 +47,7 @@ pub async fn cookie_handler(
         url = "https://".to_owned() + url.as_str();
     }
 
+    let _reap_guard = srv.reap_guard.read().await; // prevent reaping child process while we are reading from the process
     log::debug!("invoke : {} {} {}", srv.python, srv.cookie_script, url);
     let output = Command::new(srv.python.as_str()) //todo add timetout for command
         .arg(srv.cookie_script.as_str())

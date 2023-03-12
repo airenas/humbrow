@@ -52,11 +52,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
         log::debug!("expected drop tx_close");
     });
 
+    let reap_guard = Arc::new(RwLock::new(0));
     let srv = Arc::new(RwLock::new(Service {
         user_agent: "".to_string(),
         exec_guard: Mutex::new(0),
         python: cfg.python.clone(),
         cookie_script: cfg.cookie_script,
+        reap_guard: reap_guard.clone(),
     }));
 
     // let mut srv = Arc::new(Mutex::new("".to_string()));
@@ -87,16 +89,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
             ct.cancelled().await;
         });
 
+    let _reap_guard = reap_guard.clone();
     tokio::spawn(async move {
-        do_zombie_reaper(cancel_token).await.unwrap_or_else(|e| {
-            log::error!("{e}");
-        });
+        do_zombie_reaper(cancel_token, _reap_guard)
+            .await
+            .unwrap_or_else(|e| {
+                log::error!("{e}");
+            });
         log::debug!("exit zombie reaper");
     });
 
     tokio::spawn(async move {
         log::info!("call to agent script");
         let url = format!("http://localhost:{}/agent", cfg.port);
+
+        let _reap_guard = reap_guard.read().await;
         log::debug!("invoke : {} {} {}", cfg.python, cfg.agent_script, url);
         let output = std::process::Command::new(cfg.python.as_str()) // todo: add timeout for command
             .arg(cfg.agent_script.as_str())
